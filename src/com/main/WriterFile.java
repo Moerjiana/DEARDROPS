@@ -51,18 +51,18 @@ public class WriterFile {
 			}
 			
 			
-//			if (maxReturnSize < 0) {//如果为负数,取出最后几位被截取掉的byte元素
-//				lastByte = new byte[0-maxReturnSize];
-//				for (int i = 0; i < 0-maxReturnSize; i++) {
-//					lastByte[i] = buff[buff.length-1-i];
-//				}
-//			}
+			if (maxReturnSize < 0) {//如果为负数,取出最后几位被截取掉的byte元素 
+				lastByte = new byte[0-maxReturnSize];
+				for (int i = 0; i < 0-maxReturnSize; i++) {
+					lastByte[i] = buff[buff.length-1-i];
+				}
+			}
 			
 			file = new File(url);
 			byte[] oldBuff = new byte[(int)file.length()];
 			inputStream = new FileInputStream(file);
 			inputStream.read(oldBuff);
-			
+			//复制后的长度应调大,最后统一处理00等数据,可能会出现先大再小,尾位丢失的情况
 			byte[] reBuff = Arrays.copyOf(oldBuff, oldBuff.length+maxReturnSize);//复制到新数组中 //if maxReturnSize < 0 以00结尾
 			
 			for (int i = 0; i < lineTextArr.length; i++) {//往byte数组中,写入数据
@@ -70,21 +70,16 @@ public class WriterFile {
 				byte[] tmpReByte = split[4].getBytes("GBK");
 				if (Integer.parseInt(split[3]) != tmpReByte.length ) {//如果不等
 					if (i != 0) {
-						
+						//长度不相等,找到指令坐标
 					}
-					for (int j = 0; j < tmpReByte.length; j++) {
-						reBuff[Integer.parseInt(split[2])+j] = tmpReByte[j];
-//						System.out.println(split[2]+"|"+new String(tmpReByte,"GBK"));
-					}
+//					for (int j = 0; j < tmpReByte.length; j++) {
+//						reBuff[Integer.parseInt(split[2])+j] = tmpReByte[j];
+//					}
 				}else{
 					if (upIndexMap.get(split[2]) != null && !("".equals(upIndexMap.get(split[2])))) {//长度有变化
-//						for (int j = 0; j < tmpReByte.length; j++) {
-//							reBuff[Integer.parseInt(split[2])] = tmpReByte[j];
-//						}
-						for (int j = 0; j < tmpReByte.length; j++){
-							reBuff[Integer.parseInt(split[2])+j] = tmpReByte[j];
-						}
+						//更新过长度
 					}else{
+						//跟原来没变化
 						for (int j = 0; j < tmpReByte.length; j++) {
 							reBuff[Integer.parseInt(split[2])+j] = tmpReByte[j];
 						}
@@ -100,6 +95,13 @@ public class WriterFile {
 		}catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	public void addArrInsertNum(){
+		//插入byte
+		//更新之后的指令坐标
+		//添加已更新标识
+		
 	}
 	
 	private static void writeTexts(byte[] text,String outUrl) throws IOException {
